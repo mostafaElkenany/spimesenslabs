@@ -25,7 +25,29 @@
     </nav>
 
     <div class="container">
-        Dashboard
+        <form method="get" action="/search">
+            <div class="form-group">
+                <label for="inputEmail1">Username</label>
+                <input class="form-control" name="username" type="text" placeholder="Enter a username...">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div>
+            <% if (locals.groupedDates) { %>
+            <ul class="list-group">
+                <% Object.keys(groupedDates).forEach((day) => { %>
+                <li class="list-group-item"><%= day %>:
+                    <ul>
+                        <% groupedDates[day].map((time) => { %>
+                        <li><%= new Date(time).toLocaleTimeString() %> </li>
+                        <% }); %>
+                    </ul>
+                </li>
+
+                <% }); %>
+            </ul>
+            <% } %>
+        </div>
     </div>
 </body>
 
