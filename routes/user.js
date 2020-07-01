@@ -2,7 +2,7 @@ const express = require('express');
 const redis = require('redis');
 const _ = require('lodash');
 const moment = require('moment');
-const auth = require('../middlewares/auth');
+const { isLoggedIn, auth } = require('../middlewares/auth');
 const User = require('../models/user');
 
 const router = express.Router();
@@ -18,11 +18,11 @@ client.on("error", (error) => {
 });
 
 // adding routes to express router
-router.get('', auth, (req, res) => {
+router.get('', isLoggedIn, (req, res) => {
     res.redirect('/login');
 })
 
-router.get('/login', auth, (req, res) => {
+router.get('/login', isLoggedIn, (req, res) => {
     res.render('login');
 })
 
@@ -49,7 +49,7 @@ router.post('/login', (req, res) => {
         .catch(error => console.log(error));
 })
 
-router.get('/signup', auth, (req, res) => {
+router.get('/signup', isLoggedIn, (req, res) => {
     res.render('signup');
 })
 
@@ -76,17 +76,15 @@ router.post('/signup', (req, res) => {
         });
 })
 
-router.get('/home', (req, res) => {
-    if (req.session.user && req.cookies.user_sid) {
-        res.render('home');
-    }
-    else res.redirect('/login');
+router.get('/home', auth, (req, res) => {
+    res.render('home');
 })
 
 //route to get login dates
-router.get('/search', (req, res) => {
+router.get('/search', auth, (req, res) => {
     const { username } = req.query;
 
+    //search for input username in mysql database
     User.findOne({ where: { username } })
         .then((user) => {
             if (_.isEmpty(user)) {
@@ -95,7 +93,9 @@ router.get('/search', (req, res) => {
             } else {
                 //get login dates from redis
                 client.lrange(username, 0, -1, (err, result) => {
-                    if (err) console.log(err);
+                    if (err) {
+                        console.log(err);
+                    }
                     else {
                         // group login dates by day
                         const groupedDates = _.groupBy(result, (date) => {

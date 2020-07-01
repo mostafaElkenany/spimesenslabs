@@ -37,6 +37,7 @@
         </form>
         <div>
             <% if (locals.groupedDates) { %>
+            <% if (Object.keys(groupedDates).length !==0 ) {%>
             <ul class="list-group">
                 <% Object.keys(groupedDates).forEach((day) => { %>
                 <li class="list-group-item"><%= day %>:
@@ -49,7 +50,10 @@
 
                 <% }); %>
             </ul>
-            <% } %>
+            <% } else { %>
+            <h3>This user didn't log in yet</h3>
+            <%}%>
+            <%}%>
         </div>
     </div>
 </body>

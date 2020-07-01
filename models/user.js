@@ -89,7 +89,7 @@ User.prototype.validatePssword = function (password) {
 };
 
 // create the defined tables in the specified database if it doesn't exist.
-sequelize.sync({ alter: true })
+sequelize.sync()
     .then(() => console.log('users table has been successfully created, or updated if one exists'))
     .catch(error => console.log(error));
 
