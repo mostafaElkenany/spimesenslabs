@@ -25,6 +25,9 @@
     </nav>
 
     <div class="container">
+        <% if (locals.error) { %>
+        <div class="alert alert-danger col-sm-12"><%= error %></div>
+        <% } %>
         <form method="get" action="/search">
             <div class="form-group">
                 <label for="inputEmail1">Username</label>

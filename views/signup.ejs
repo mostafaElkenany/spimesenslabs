@@ -19,8 +19,8 @@
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal" method="post" action="/signup">
-                        <% if (locals.error) { %>
-                        <div class="alert alert-danger col-sm-12"><%= error %></div>
+                        <% if (locals.errorMsg) { %>
+                        <div class="alert alert-danger col-sm-12"><%= errorMsg %></div>
                         <% } %>
                         <div id="signupalert" style="display:none" class="alert alert-danger">
                             <p>Error:</p>

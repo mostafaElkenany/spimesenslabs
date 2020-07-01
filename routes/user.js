@@ -29,7 +29,7 @@ router.get('/login', auth, (req, res) => {
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
     User.findOne({ where: { email } })
-        .then(function (user) {
+        .then((user) => {
             if (user && user.validatePssword(password)) {
                 req.session.user = user.dataValues;
 
@@ -67,10 +67,12 @@ router.post('/signup', (req, res) => {
         .then(user => {
             res.render('login', { message: 'Account created successfully' });
         })
-        .catch(err => {
+        .catch(sqlerr => {
             let error;
-            if (err.errors) error = err.errors[0].message;
-            res.render('signup', { error })
+            if (sqlerr.errors) {
+                errorMsg = sqlerr.errors[0].message;
+            }
+            res.render('signup', { errorMsg })
         });
 })
 
@@ -83,21 +85,29 @@ router.get('/home', (req, res) => {
 
 //route to get login dates
 router.get('/search', (req, res) => {
-    // console.log(req.query);
     const { username } = req.query;
 
-    //get login dates from redis
-    client.lrange(username, 0, -1, (err, result) => {
-        if (err) console.log(err);
-        else {
-            // group login dates by day
-            const groupedDates = _.groupBy(result, (date) => {
-                return moment(date, "MM-DD-YYYY").startOf('day').format("dddd, MMMM Do YYYY");
-            })
+    User.findOne({ where: { username } })
+        .then((user) => {
+            if (_.isEmpty(user)) {
+                error = "User not found";
+                res.render('home', { error });
+            } else {
+                //get login dates from redis
+                client.lrange(username, 0, -1, (err, result) => {
+                    if (err) console.log(err);
+                    else {
+                        // group login dates by day
+                        const groupedDates = _.groupBy(result, (date) => {
+                            return moment(date, "ddd-MMM-DD-YYYY").startOf('day').format("dddd, MMMM Do YYYY");
+                        })
 
-            res.render('home', { groupedDates });
-        };
-    })
+                        res.render('home', { groupedDates });
+                    };
+                })
+            }
+        })
+        .catch(error => console.log(error));
 })
 
 router.get('/logout', (req, res) => {
