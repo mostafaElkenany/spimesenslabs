@@ -27,5 +27,15 @@ app.use(session({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use('/', userRouter)
+// handling 404 requests
+app.use(function (req, res, next) {
+    res.status(404).send("Page not found!")
+  });
+
+// error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err)
+    res.status(500).send('Something went wrong!')
+})
 
 app.listen(port, () => console.log(`Server working on port ${port}`));

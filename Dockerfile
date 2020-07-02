@@ -1,15 +1,17 @@
 FROM node:12
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Install app dependencies
-COPY package*.json ./
+COPY . /app
+
+RUN sh /app/install-redis.sh
 
 RUN npm install
 
 # Bundle app source
-COPY . .
 
 EXPOSE 5000
-CMD [ "node", "server.js" ]
+
+CMD ["sh", "-c", "redis-server > /dev/null 2>&1 & node server.js"]

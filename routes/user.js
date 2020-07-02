@@ -26,7 +26,7 @@ router.get('/login', isLoggedIn, (req, res) => {
     res.render('login');
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', (req, res, next) => {
     const { email, password } = req.body;
     User.findOne({ where: { email } })
         .then((user) => {
@@ -46,7 +46,7 @@ router.post('/login', (req, res) => {
             }
             else res.render('login', { error: 'Wrong email or password' })
         })
-        .catch(error => console.log(error));
+        .catch(error => next(error));
 })
 
 router.get('/signup', isLoggedIn, (req, res) => {
@@ -81,7 +81,7 @@ router.get('/home', auth, (req, res) => {
 })
 
 //route to get login dates
-router.get('/search', auth, (req, res) => {
+router.get('/search', auth, (req, res, next) => {
     const { username } = req.query;
 
     //search for input username in mysql database
@@ -107,7 +107,7 @@ router.get('/search', auth, (req, res) => {
                 })
             }
         })
-        .catch(error => console.log(error));
+        .catch(error => next(error));
 })
 
 router.get('/logout', (req, res) => {
